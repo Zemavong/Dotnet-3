@@ -26,7 +26,7 @@ public class CalculatorService(Microsoft.Extensions.Options.IOptions<CalculatorO
     {
         CalculationResult result = new CalculationResult();
         result.Value = Math.Round(a - b, _options.Precision);
-        ValidateResult(result.Value);
+        ValidateResult(a - b);
         return result;
     }
 
@@ -44,11 +44,13 @@ public class CalculatorService(Microsoft.Extensions.Options.IOptions<CalculatorO
         {
             _logger.LogError(CalculationException.DivideByZero(), "Попытка поделить на ноль");
             throw CalculationException.DivideByZero();
+        } else
+        {
+            CalculationResult result = new CalculationResult();
+            result.Value = Math.Round(a / b, _options.Precision);
+            ValidateResult(result.Value);
+            return result;
         }
-        CalculationResult result = new CalculationResult();
-        result.Value = Math.Round(a / b, _options.Precision);
-        ValidateResult(result.Value);
-        return result;
     }
 
     CalculationResult ICalculatorService.Power(double baseValue, double exponent)
@@ -67,17 +69,18 @@ public class CalculatorService(Microsoft.Extensions.Options.IOptions<CalculatorO
         return result;
     }
 
-    void ValidateResult(double result)
+    private void ValidateResult(double result)
     {
         if (result < 0 && !_options.AllowNegativeResults)
         {
-            _logger.LogError(CalculationException.NegativeResultNotAllowed(), CalculationException.IsNegative().Message); 
+            _logger.LogError(CalculationException.IsNegative(), CalculationException.IsNegative().Message); 
             throw CalculationException.IsNegative();
         }
         if (result >= _options.MaxValue)
         {
             _logger.LogError(CalculationException.OverflowMaxValue(result), CalculationException.OverflowMaxValue(result).Message);
             throw CalculationException.OverflowMaxValue(result);
+
         }
     }
 }

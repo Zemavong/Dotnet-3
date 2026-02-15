@@ -11,7 +11,4 @@ public class CalculationException(string message, string? errorCode = null) : Ex
 
     public static CalculationException OverflowMaxValue(double maxValue) =>
         new($"Результат превышает допустимое значение: {maxValue}.", "RESULT_TOO_LARGE");
-
-    public static CalculationException NegativeResultNotAllowed() =>
-        new("Отрицательные результаты запрещены в текущей конфигурации.", "NEGATIVE_RESULT");
 }
